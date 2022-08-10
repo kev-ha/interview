@@ -15,12 +15,14 @@ public class Application {
 			Scanner scanner = new Scanner(System.in);
 			String str = scanner.nextLine();
 			
-			wc.getWordFrequency(str);
-			
+			// Check for "exit" command to terminate the application
 			if (str.equalsIgnoreCase("exit")) {
 				scanner.close();
 				running = false;
 				System.out.println("Word Frequency Counter application closed.");
+			}
+			else {
+				System.out.println(wc.getWordFrequency(str));
 			}
 		}
 		while (running);
