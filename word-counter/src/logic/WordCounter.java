@@ -7,11 +7,10 @@ import java.util.Map;
 
 public class WordCounter {
 	
-	HashMap<String, Integer> wordsMap = new HashMap<String, Integer>();
-	
-	// Over engineering the " " space delimiter - definitely do not need something like this
-	enum Delimiter {
-		SPACE(" ");
+	// List of Delimiter enum
+	private enum Delimiter {
+		SPACE(" "),
+		NEWLINE("\n");
 		
 		private String value;
 		
@@ -24,7 +23,9 @@ public class WordCounter {
 		}
 	}
 
-	public void populateWordsMap (String input) {
+	public HashMap<String, Integer> populateWordsMap (String input) {
+		// Data structure of choice is HashMap since it stores unique values as key
+		HashMap<String, Integer> wordsMap = new HashMap<String, Integer>();
 		
 		// Construct an array of words
 		String[] words = input.split(Delimiter.SPACE.getValue());
@@ -40,20 +41,18 @@ public class WordCounter {
 				wordsMap.put(word, wordsMap.get(word) + 1);
 			}
 		}
+		
+		return wordsMap;
 	}
 	
-	private HashMap<String, Integer> getWordsMap() {
-		return this.wordsMap;
-	}
-	
-	private HashMap<String, Integer> sortMapByWordOccurrences(HashMap<String, Integer> map) {
+	protected HashMap<String, Integer> sortMapDescendingByValue(HashMap<String, Integer> map) {
 		// Create a sorted map
 		LinkedHashMap<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
 		
 		// Populate the sorted map with words frequency in descending order
 		map.entrySet().stream()
 		.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-		.forEachOrdered(word -> sortedMap.put(word.getKey(), word.getValue()));
+		.forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
 		
 		return sortedMap;
 	}
@@ -63,25 +62,29 @@ public class WordCounter {
 	 * Example: 2 test
 	 * @param map
 	 */
-	public void printSortedMap (HashMap<String, Integer> map) {
+	public String getResult (HashMap<String, Integer> map) {
+		final StringBuilder sb = new StringBuilder();
 		map.entrySet().forEach(word -> {
-			System.out.println(String.format("%d %s", word.getValue(), word.getKey()));
+			sb.append(String.format("%d %s%s", word.getValue(), word.getKey(), Delimiter.NEWLINE.getValue()));
 		});
+		
+		return sb.toString();
 	}
 	
 	/**
 	 * Get the word frequency output given an input String.
 	 * @param input
 	 */
-	public void getWordFrequency (String input) {
-		
-		// Make sure we start with clean map
-		getWordsMap().clear();
-		
+	public String getWordFrequency (String input) {
 		// Populate the words to unsorted map
-		populateWordsMap(input);
+		HashMap<String, Integer> unsortedMap = populateWordsMap(input);
 		
+		// Sort the unsortedMap into descending order based on value
+		HashMap<String, Integer> sortedMap = sortMapDescendingByValue(unsortedMap);
+
 		// Print the sorted map
-		printSortedMap(sortMapByWordOccurrences(getWordsMap()));
+		String result = getResult(sortedMap);
+		
+		return result;
 	}
 }
